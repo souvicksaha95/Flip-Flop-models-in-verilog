@@ -1,15 +1,41 @@
-module jk_flipflop (j, k, clear, clock, q, qbar);
+module jk_flipflop(j, k, clear, clock, q, qbar);
 	input j, k, clock, clear;
-	output q, qbar;
-	wire a, b, y, ybar, cbar, c, d;
+	output reg q = 0, qbar;
 	
-	not  net1(cbar, clock);
-	nand net2(a, qbar, j, clock, clear);
-	nand net3(b, clock, k, q);
-	nand net4(y, a, ybar);
-	nand net5(ybar, y, clear, b);
-	nand net6(c, y, cbar);
-	nand net7(d, cbar, ybar);
-	nand net8(q, c, qbar);
-	nand net9(qbar, q, clear, d);
+	always @(posedge clock)
+		begin
+			if(j == 0)
+				begin
+					if (k == 0)
+						begin
+							q <= q;
+							qbar <= qbar;
+						end
+					if (k == 1)
+						begin
+							q <= 0;
+							qbar <= 1;
+						end
+				end
+			else if(j == 1)
+				begin
+					if (k == 0)
+						begin
+							q <= 1;
+							qbar <= 0;
+						end
+					if (k == 1)
+						begin
+							q <= ~q;
+							qbar <= ~qbar;
+						end
+				end
+		end
+		
+	always @(negedge clear)
+		begin
+			q <= 0;
+			qbar <= 1;
+		end
+	
 endmodule
